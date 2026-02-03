@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SenderX Web Receiver</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
+      background: linear-gradient(135deg, #1e5cff, #3aa0ff);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .card {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px;
+      width: 360px;
+      text-align: center;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+      animation: float 4s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    h1 { margin-bottom: 10px; }
+    #dropZone {
+      margin-top: 20px;
+      padding: 30px;
+      border: 2px dashed rgba(255,255,255,0.6);
+      border-radius: 16px;
+      cursor: pointer;
+    }
+    #dropZone.drag {
+      background: rgba(255,255,255,0.15);
+    }
+    #qr {
+      margin-top: 20px;
+    }
+    input { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h1>SenderX</h1>
+  <p>Drag & drop files or scan QR from mobile</p>
+
+  <div id="dropZone">📂 Drop files here</div>
+  <input type="file" id="fileInput" multiple />
+
+  <div id="qr"></div>
+</div>
+
+<script>
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+
+  // Drag & Drop
+  dropZone.onclick = () => fileInput.click();
+
+  dropZone.ondragover = e => {
+    e.preventDefault();
+    dropZone.classList.add('drag');
+  };
+
+  dropZone.ondragleave = () => dropZone.classList.remove('drag');
+
+  dropZone.ondrop = e => {
+    e.preventDefault();
+    dropZone.classList.remove('drag');
+    handleFiles(e.dataTransfer.files);
+  };
+
+  fileInput.onchange = e => handleFiles(e.target.files);
+
+  function handleFiles(files) {
+    alert(files.length + ' file(s) ready to send (WebRTC backend next)');
+  }
+
+  // QR Code generation
+  const sessionId = Math.random().toString(36).substring(2, 10);
+  QRCode.toCanvas(document.getElementById('qr'), 'senderx://' + sessionId, {
+    width: 180,
+    color: { dark: '#ffffff', light: 'transparent' }
+  });
+</script>
+
+</body>
+</html>
